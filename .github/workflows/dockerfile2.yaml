@@ -37,6 +37,9 @@ jobs:
   deploy:
     needs: docker
     runs-on: ubuntu-latest
+    concurrent:
+      cancel-in-progress: true
+      group: Deploy MongoDB
 
     steps:
       # Step 1: Login to Docker Hub
