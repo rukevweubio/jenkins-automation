@@ -1,4 +1,5 @@
-name: matrix job-configuration
+name: Matrix Job Configuration
+
 on:
   push:
 
@@ -7,30 +8,26 @@ jobs:
     runs-on: ubuntu-latest
    
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build
-        run: docker run hello world
+      # Step 2: Run a test container
+      - name: Run Docker Hello World (Ubuntu)
+        run: docker run hello-world
 
-      - name: Install dependencies
-        run:  docker info
+      # Step 3: Display Docker information
+      - name: Display Docker Info (Ubuntu)
+        run: docker info
 
   deploy:
     runs-on: windows-latest
+
     steps:
-      - name:  deploy on window
-        run: docker run hello world 
+      # Step 1: Run a test container on Windows
+      - name: Run Docker Hello World (Windows)
+        run: docker run hello-world
 
-      - name: Build
-        run: docker run hello world
-
-      - name: shell
-        run: |
-
-          docker info
-
-        
-
-    
- 
+      # Step 2: Display Docker information on Windows
+      - name: Display Docker Info (Windows)
+        run: docker info
