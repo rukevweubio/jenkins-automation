@@ -1,18 +1,21 @@
-name: Docker Build and Push
+name: Build, Push, and Deploy Docker Image
 
 on:
   push:
-   
+    
+
 env:
-    DOCKER_USERNAME: rukevweubio
-    DOCKER_PASSWORD: Comfort12345@
-    docker_image: nginx
-    docker_registry: docker.io
+  DOCKER_USERNAME: rukevweubio
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  docker_image: mongo
+  docker_registry: docker.io
+
 jobs:
-  docker:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -25,9 +28,6 @@ jobs:
 deploy:
   needs: docker
   runs-on: ubuntu-latest
-  concurrency:
-    group: deploy
-    cancel-in-progress: true
   steps:
     - name: Checkout code
       uses: actions/checkout@v3
