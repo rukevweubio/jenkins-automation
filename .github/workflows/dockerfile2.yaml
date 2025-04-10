@@ -37,7 +37,7 @@ jobs:
   deploy:
     needs: docker
     runs-on: ubuntu-latest
-    concurrent:
+    concurrency:
       cancel-in-progress: true
       group: Deploy MongoDB
 
