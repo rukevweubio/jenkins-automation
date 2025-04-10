@@ -1,35 +1,51 @@
-name: Docker Build and Push
+name: Build, Push, and Deploy Docker Image
 
 on:
   push:
-   
+    
+
 env:
-    DOCKER_USERNAME: rukevweubio
-    DOCKER_PASSWORD: Comfort12345@
-    docker_image: nginx
-    docker_registry: docker.io
+  DOCKER_USERNAME: rukevweubio
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  docker_image: mongo
+  docker_registry: docker.io
+
 jobs:
-  docker:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Docker login
+      - name: Docker login
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login ${{ env.docker_registry }} --username ${{ env.DOCKER_USERNAME }} --password-stdin
 
-      - name: docker login 
-        uses: docker login ${{secrets.DOCKER_PASSWORD}}| --username=${{env.OCKER_USERNAME}} --password-stdin  
+      # Step 3: Build the Docker image
+      - name: Build Docker image
+        run: docker build -t ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest .github/workflows/
 
-      - name: docker pull image 
-        uses: docker pull ${{env.Ddocker_registry}}/${{env.DOCKER_USERNAME}}/docker_image:latest
-deploy:
-  needs: docker
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Step 4: Push the Docker image to Docker Hub
+      - name: Push Docker image
+        run: docker push ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest
 
-    - name: Deploy to Docker Hub
-      run: |
-        
-        docker run -d -p 80:80 ${{ env.docker_registry }}/${{env.DOCKER_USERNAME}}/docker_image:latest    
+  pull-and-deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    
+
+    steps:
+      # Step 1: Docker login
+      - name: Docker login
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login ${{ env.docker_registry }} --username ${{ env.DOCKER_USERNAME }} --password-stdin
+
+      # Step 2: Pull the Docker image from Docker Hub
+      - name: Pull Docker image
+        run: docker pull ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest
+
+      # Step 3: Run the Docker container
+      - name: Deploy Docker container
+        run: |
+          docker run -d -p 27017:27017 ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest
