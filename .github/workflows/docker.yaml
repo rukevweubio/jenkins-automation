@@ -7,7 +7,7 @@ on:
 env:
   DOCKER_USERNAME: rukevweubio
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  docker_image: mongo
+  docker_image: nginx
   docker_registry: docker.io
 
 jobs:
