@@ -1,0 +1,22 @@
+name: matric config
+on:
+  push:
+   
+jobs:
+  deploy:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [hello world , alpine]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code ${{ matrix.os }}
+        uses: actions/checkout@v3
+
+      
+      - name: Run a test container ${{ matrix.os }}
+        run: docker run ${{ matrix.node-version }}
+
+      - name: Display Docker information
+        run: docker info ${{ matrix.os }}   
