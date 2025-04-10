@@ -6,14 +6,12 @@ on:
 jobs:
   deploy:
     strategy:
-      fail-fast: false
-      max-parallel: 2
       matrix:
         os: [ubuntu-latest, windows-latest]
         node-version: [hello-world, alpine]
-      exclude:
-        - os: windows-latest
-          node-version: alpine
+        exclude:
+          - os: windows-latest
+            node-version: alpine
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -27,4 +25,4 @@ jobs:
 
       # Step 3: Display Docker information
       - name: Display Docker information
-        run: docker info 
+        run: docker info
