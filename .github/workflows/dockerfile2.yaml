@@ -1,30 +1,49 @@
-name: docker mongodb
+name: Build, Push, and Deploy MongoDB Docker Image
+
 on:
   push:
-env:
- docker_registry: docker.io
- DOCKER_USERNAME: rukevweubio
- DOCKER_PASSWORD: Comfort12345@
- docker_image: my-mongodb
 
-  
+env:
+  docker_registry: docker.io
+  DOCKER_USERNAME: rukevweubio
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  docker_image: my-mongodb
+
 jobs:
   docker:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Pull Docker image
-        run: docker build -t  ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest./.github/workflows
-      
-      - name: Pull Docker image
-        run: docker tag my-mongodb:latest  ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest
+      # Step 2: Build the Docker image
+      - name: Build Docker image
+        run: docker build -t ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest ./.github/workflows
 
-    
+      # Step 3: Tag the Docker image (Optional, tagging already happens during build)
+      - name: Tag Docker image
+        run: docker tag ${{ env.docker_image }}:latest ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest
+
+      # Step 4: Login to Docker Hub
       - name: Docker login
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login ${{ env.docker_registry }} --username ${{ env.DOCKER_USERNAME }} --password-stdin
 
-      # Step 2: Pull Docker image
+      # Step 5: Push the Docker image to Docker Hub
+      - name: Push Docker image
+        run: docker push ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Login to Docker Hub
+      - name: Docker login
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login ${{ env.docker_registry }} --username ${{ env.DOCKER_USERNAME }} --password-stdin
+
+      # Step 2: Pull the Docker image from Docker Hub
       - name: Pull Docker image
         run: docker pull ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest
 
