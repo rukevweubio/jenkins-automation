@@ -1,0 +1,34 @@
+name: docker mongodb
+on:
+  push:
+env:
+ docker_registry: docker.io
+ DOCKER_USERNAME: rukevweubio
+ DOCKER_PASSWORD: Comfort12345@
+ docker_image: my-mongodb
+
+  
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Pull Docker image
+        run: docker build -t  ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest.
+      
+      - name: Pull Docker image
+        run: docker tag my-mongodb:latest  ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest
+
+    
+      - name: Docker login
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login ${{ env.docker_registry }} --username ${{ env.DOCKER_USERNAME }} --password-stdin
+
+      # Step 2: Pull Docker image
+      - name: Pull Docker image
+        run: docker pull ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest
+
+      # Step 3: Deploy the Docker container
+      - name: Deploy Docker container
+        run: |
+          docker run -d -p 27017:27017 ${{ env.docker_registry }}/${{ env.DOCKER_USERNAME }}/${{ env.docker_image }}:latest
