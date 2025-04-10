@@ -6,9 +6,15 @@ on:
 jobs:
   deploy:
     strategy:
+      fail-fast: false
+      parallel: true
+      max-parallel: 2
       matrix:
         os: [ubuntu-latest, windows-latest]
         node-version: [hello-world, alpine]
+      exclude:
+        - os: windows-latest
+          node-version: alpine
 
     runs-on: ${{ matrix.os }}
     steps:
