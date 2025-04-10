@@ -1,0 +1,37 @@
+name: matrix job-configuration
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [14, 16, 18]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Deploy
+        run: |
+           docker info 
+            docker run hello world
+             uname -a
+            docker ps
+            docker images
+
+    
+ 
