@@ -1,4 +1,4 @@
-name: nodejs app deployment
+name: nodejs app deployment man 
 
 on: 
   workflow_dispatch:
